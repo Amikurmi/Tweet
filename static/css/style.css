@@ -1,0 +1,16 @@
+.tweet-card {
+    margin: 20px 0;
+}
+.tweet-actions {
+    margin-top: 10px;
+}
+.comment-dropdown {
+    cursor: pointer;
+}
+.card-footer {
+    position: relative;
+}
+.comment-list {
+    max-height: 200px; /* Adjust based on your preference */
+    overflow-y: auto;
+}

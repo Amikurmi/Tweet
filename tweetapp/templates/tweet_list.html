@@ -1,0 +1,80 @@
+
+
+
+
+{% extends "layout.html" %} 
+{% block title %} Tweet Home {% endblock title %}
+{% block content %}
+    <div class="container">
+        <h1 class='text-center mt-4'>Welcome to the Tweet Project</h1>
+
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'search_tweet_list' %}" class="mb-4 d-flex">
+            <input type="text" name="search" value="{{ search_query }}" class="mx-3" placeholder="Search tweets or users">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Tweets -->
+        <div class="row gap-3">
+            {% for tweet in tweets %}
+            <div class="card tweet-card" style="width: 18rem;">
+                {% if tweet.photo %}
+                <img src="{{ tweet.photo.url }}" class="card-img-top" alt="Tweet image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ tweet.user.username }}</h5>
+                    <p class="card-text">{{ tweet.text }}</p>
+
+                    <!-- Tweet Actions -->
+                    <div class="tweet-actions">
+                        {% if user.is_authenticated %}
+                            <!-- Like Button -->
+                            <a href="{% url 'like_tweet' tweet.id %}" class="btn btn-outline-primary">
+                                {% if user in tweet.likes.all %}
+                                    Unlike
+                                {% else %}
+                                    Like
+                                {% endif %}
+                            </a>
+                            <!-- Display Like Count -->
+                            <span class="ml-2">{{ tweet.likes.count }} {{ tweet.likes.count|pluralize:"Like,Likes" }}</span>
+
+                            <!-- Comment Button -->
+                            <a href="{% url 'comment_create' tweet.id %}" class="btn btn-outline-secondary">Add Comment</a>
+                        {% endif %}
+                        {% if tweet.user == user %}
+                            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-primary">Edit</a>
+                            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger">Delete</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Comment Count and Dropdown -->
+                <div class="card-footer">
+                    <a class="btn btn-link comment-dropdown" data-toggle="collapse" href="#comments-{{ tweet.id }}" role="button" aria-expanded="false" aria-controls="comments-{{ tweet.id }}">
+                        Comments ({{ tweet.comments.count }})
+                    </a>
+                    <div class="collapse" id="comments-{{ tweet.id }}">
+                        <div class="card card-body comment-list">
+                            {% if tweet.comments.all %}
+                                <ul class="list-unstyled">
+                                    {% for comment in tweet.comments.all %}
+                                        <li><strong>{{ comment.user.username }}:</strong> {{ comment.content }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No comments yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No tweets found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock content %}
+
